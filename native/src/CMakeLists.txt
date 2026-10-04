@@ -30,6 +30,7 @@ set(API_SOURCES
     adapters/inbound/c_api.c
     adapters/outbound/platform.c
     adapters/outbound/common/text_utils.c
+    adapters/outbound/common/png_writer.c
 )
 
 if(WIN32)
@@ -73,7 +74,7 @@ endif()
 
 if(WIN32)
     set_target_properties(machineinfo PROPERTIES PREFIX "")
-    target_link_libraries(machineinfo PRIVATE advapi32 ole32 oleaut32 wbemuuid)
+    target_link_libraries(machineinfo PRIVATE advapi32 ole32 oleaut32 wbemuuid shell32 gdi32 user32)
 elseif(APPLE)
     target_link_libraries(machineinfo PRIVATE "-framework CoreFoundation" "-framework IOKit" "-framework DiskArbitration")
 endif()
@@ -86,7 +87,7 @@ endif()
 
 if(MACHINEINFO_BUILD_TESTS)
     enable_testing()
-    add_executable(machineinfo-tests tests/test_inventory.c tests/fake_adapters.c)
+    add_executable(machineinfo-tests tests/test_inventory.c tests/fake_adapters.c adapters/outbound/common/png_writer.c)
     target_link_libraries(machineinfo-tests PRIVATE machineinfo_core)
     add_test(NAME inventory COMMAND machineinfo-tests)
 endif()

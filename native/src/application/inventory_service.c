@@ -39,6 +39,9 @@ static void normalize_packages(mi_package_list *list)
         mi_trim(list->items[i].name);
         mi_trim(list->items[i].version);
         mi_trim(list->items[i].publisher);
+        mi_trim(list->items[i].install_location);
+        mi_trim(list->items[i].icon_path);
+        mi_trim(list->items[i].uninstall_command);
         if (list->items[i].name[0] == '\0') continue;
         list->items[write++] = list->items[i];
     }

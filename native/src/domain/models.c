@@ -46,6 +46,13 @@ void mi_disk_list_free(mi_disk_list *list) { MI_LIST_FREE(list); }
 void mi_temperature_list_free(mi_temperature_list *list) { MI_LIST_FREE(list); }
 void mi_package_list_free(mi_package_list *list) { MI_LIST_FREE(list); }
 
+void mi_buffer_free(mi_buffer *buffer)
+{
+    free(buffer->data);
+    buffer->data = NULL;
+    buffer->length = 0;
+}
+
 void mi_copy_str(char *dst, size_t dst_size, const char *src)
 {
     if (!dst || dst_size == 0) return;

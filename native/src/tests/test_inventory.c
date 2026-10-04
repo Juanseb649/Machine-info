@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "adapters/inbound/json/report_presenter.h"
+#include "adapters/outbound/common/png_writer.h"
 #include "application/inventory_service.h"
 #include "fake_adapters.h"
 
@@ -90,12 +91,43 @@ static void test_json_escaping(void)
     mi_report_free(&r);
 }
 
+static void test_software_details(void)
+{
+    mi_inventory_service svc;
+    mi_inventory_init(&svc, fake_hardware_port(), fake_software_port());
+    mi_report r;
+    mi_inventory_collect(&svc, MI_SECTION_SOFTWARE, &r);
+    char *json = mi_present_report_json(&r);
+    CHECK(strstr(json, "\"installLocation\":\"C:\\\\Program Files\\\\Git\"") != NULL);
+    CHECK(strstr(json, "\"uninstallCommand\":\"\\\"C:") != NULL);
+    CHECK(strstr(json, "\"sizeBytes\":2048") != NULL);
+    free(json);
+    mi_report_free(&r);
+}
+
+static void test_png_writer(void)
+{
+    unsigned char pixels[3 * 2 * 4];
+    for (size_t i = 0; i < sizeof(pixels); i++) pixels[i] = (unsigned char)(i * 7);
+    mi_buffer png = {0};
+    CHECK(mi_png_encode_rgba(pixels, 3, 2, &png) == MI_OK);
+    CHECK(png.length > 8 + 25 + 12 + 12);
+    CHECK(memcmp(png.data, "\x89PNG\r\n\x1a\n", 8) == 0);
+    CHECK(memcmp(png.data + 12, "IHDR", 4) == 0);
+    CHECK(memcmp(png.data + png.length - 8, "IEND", 4) == 0);
+    mi_buffer_free(&png);
+    CHECK(png.data == NULL);
+    CHECK(mi_png_encode_rgba(pixels, 0, 2, &png) != MI_OK);
+}
+
 int main(void)
 {
     test_normalization();
     test_section_selection();
     test_unsupported_ports();
     test_json_escaping();
+    test_software_details();
+    test_png_writer();
     if (failures) {
         fprintf(stderr, "%d check(s) failed\n", failures);
         return 1;

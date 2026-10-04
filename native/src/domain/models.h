@@ -7,6 +7,7 @@
 #define MI_STR_SMALL 64
 #define MI_STR_MEDIUM 256
 #define MI_STR_LARGE 512
+#define MI_STR_XLARGE 1024
 
 typedef enum {
     MI_OK = 0,
@@ -74,6 +75,11 @@ typedef struct {
     char version[MI_STR_SMALL];
     char publisher[MI_STR_MEDIUM];
     char source[MI_STR_SMALL];
+    char install_location[MI_STR_LARGE];
+    char icon_path[MI_STR_LARGE];
+    char uninstall_command[MI_STR_XLARGE];
+    char install_date[MI_STR_SMALL];
+    uint64_t size_bytes;
 } mi_package;
 
 #define MI_DECLARE_LIST(type, list_name) \
@@ -82,6 +88,11 @@ typedef struct {
         size_t count;                    \
         size_t capacity;                 \
     } list_name
+
+typedef struct {
+    unsigned char *data;
+    size_t length;
+} mi_buffer;
 
 MI_DECLARE_LIST(mi_disk_info, mi_disk_list);
 MI_DECLARE_LIST(mi_temperature, mi_temperature_list);
@@ -94,6 +105,8 @@ mi_package *mi_package_list_push(mi_package_list *list);
 void mi_disk_list_free(mi_disk_list *list);
 void mi_temperature_list_free(mi_temperature_list *list);
 void mi_package_list_free(mi_package_list *list);
+
+void mi_buffer_free(mi_buffer *buffer);
 
 void mi_copy_str(char *dst, size_t dst_size, const char *src);
 void mi_trim(char *s);

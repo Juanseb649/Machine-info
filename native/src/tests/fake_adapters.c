@@ -65,6 +65,9 @@ static mi_status fake_software(mi_package_list *out)
         mi_copy_str(p->version, sizeof(p->version), versions[i]);
         mi_copy_str(p->source, sizeof(p->source), "fake");
     }
+    mi_copy_str(out->items[0].install_location, sizeof(out->items[0].install_location), "C:\\Program Files\\Git");
+    mi_copy_str(out->items[0].uninstall_command, sizeof(out->items[0].uninstall_command), "\"C:\\Program Files\\Git\\unins000.exe\"");
+    out->items[0].size_bytes = 2048;
     return MI_OK;
 }
 
@@ -78,7 +81,7 @@ static const mi_hardware_port FAKE_HARDWARE = {
     "fake", fake_os, fake_cpu, fake_memory, fake_disks, fake_temperatures,
 };
 
-static const mi_software_port FAKE_SOFTWARE = {"fake", fake_software};
+static const mi_software_port FAKE_SOFTWARE = {"fake", fake_software, NULL, NULL};
 
 static const mi_hardware_port FAILING_HARDWARE = {
     "failing", NULL, unsupported_cpu, NULL, NULL, NULL,

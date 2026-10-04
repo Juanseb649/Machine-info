@@ -4,7 +4,7 @@
 
 #include "json_writer.h"
 
-#define MI_SCHEMA_VERSION 1
+#define MI_SCHEMA_VERSION 2
 
 const char *mi_status_name(mi_status status)
 {
@@ -130,6 +130,11 @@ static void write_software(mi_json *j, const mi_report *r)
         mi_json_kv_string(j, "version", p->version);
         mi_json_kv_string(j, "publisher", p->publisher);
         mi_json_kv_string(j, "source", p->source);
+        mi_json_kv_string(j, "installLocation", p->install_location);
+        mi_json_kv_string(j, "iconPath", p->icon_path);
+        mi_json_kv_string(j, "uninstallCommand", p->uninstall_command);
+        mi_json_kv_string(j, "installDate", p->install_date);
+        mi_json_kv_u64(j, "sizeBytes", p->size_bytes);
         mi_json_end_object(j);
     }
     mi_json_end_array(j);

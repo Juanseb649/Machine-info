@@ -106,3 +106,28 @@ int mi_split_key_value(char *line, char separator, char **key, char **value)
     mi_trim(*value);
     return 1;
 }
+
+void mi_shell_quote(const char *in, char *out, size_t out_size)
+{
+    if (!out || out_size < 3) return;
+    size_t w = 0;
+    out[w++] = '\'';
+    for (const char *c = in ? in : ""; *c; c++) {
+        if (*c == '\'') {
+            if (w + 5 >= out_size) break;
+            memcpy(out + w, "'\\''", 4);
+            w += 4;
+        } else {
+            if (w + 2 >= out_size) break;
+            out[w++] = *c;
+        }
+    }
+    out[w++] = '\'';
+    out[w] = '\0';
+}
+
+int mi_ends_with(const char *s, const char *suffix)
+{
+    size_t ls = strlen(s), lf = strlen(suffix);
+    return ls >= lf && strcmp(s + ls - lf, suffix) == 0;
+}
