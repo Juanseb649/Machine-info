@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities.dart';
 import '../formatters.dart';
 import '../widgets/common.dart';
+import '../widgets/gauges.dart';
 
 class SystemTab extends StatelessWidget {
   const SystemTab({super.key, required this.snapshot});
@@ -50,7 +51,30 @@ class CpuTab extends StatelessWidget {
           InfoRow('Frecuencia base', formatMhz(cpu.baseFrequencyMhz)),
         ]),
         InfoCard(title: 'Uso actual', icon: Icons.speed, children: [
-          UsageBar(ratio: cpu.usagePercent / 100, caption: '${cpu.usagePercent.toStringAsFixed(1)} % en uso'),
+          Row(children: [
+            ArcGauge(
+              ratio: cpu.usagePercent / 100,
+              size: 150,
+              strokeWidth: 12,
+              ticks: false,
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Text(
+                  cpu.usagePercent.toStringAsFixed(0),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                Text('% en uso', style: Theme.of(context).textTheme.bodySmall),
+              ]),
+            ),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                InfoRow('Núcleos activos', '${cpu.physicalCores} físicos · ${cpu.logicalCores} hilos'),
+                InfoRow('Frecuencia base', formatMhz(cpu.baseFrequencyMhz)),
+                const SizedBox(height: 8),
+                UsageBar(ratio: cpu.usagePercent / 100, caption: '${cpu.usagePercent.toStringAsFixed(1)} % de carga total'),
+              ]),
+            ),
+          ]),
         ]),
       ]),
     );
@@ -140,44 +164,6 @@ class StorageTab extends StatelessWidget {
             ]),
         ]);
       },
-    );
-  }
-}
-
-class TemperaturesTab extends StatelessWidget {
-  const TemperaturesTab({super.key, required this.section});
-
-  final SectionResult<List<TemperatureReading>> section;
-
-  Color _color(BuildContext context, TemperatureReading t) {
-    final limit = t.criticalCelsius ?? 100;
-    final ratio = t.celsius / limit;
-    if (ratio >= 0.9) return Theme.of(context).colorScheme.error;
-    if (ratio >= 0.7) return Colors.orange;
-    return Colors.green;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SectionView<List<TemperatureReading>>(
-      section: section,
-      builder: (context, readings) => TabScaffold(children: [
-        InfoCard(title: 'Sensores', icon: Icons.thermostat, children: [
-          for (final t in readings)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.circle, size: 14, color: _color(context, t)),
-              title: Text(t.label),
-              subtitle: Text(t.criticalCelsius == null
-                  ? t.source
-                  : '${t.source} · crítico ${t.criticalCelsius!.toStringAsFixed(0)} °C'),
-              trailing: Text(
-                '${t.celsius.toStringAsFixed(1)} °C',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-        ]),
-      ]),
     );
   }
 }

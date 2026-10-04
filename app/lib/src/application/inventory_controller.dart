@@ -15,6 +15,25 @@ class AsyncState<T> {
   AsyncState<T> startLoading() => AsyncState(value: value, loading: true);
 }
 
+class SensorHistory {
+  SensorHistory();
+
+  static const capacity = 90;
+
+  final List<double> samples = [];
+  double min = double.infinity;
+  double max = double.negativeInfinity;
+
+  void add(double value) {
+    samples.add(value);
+    if (samples.length > capacity) samples.removeAt(0);
+    if (value < min) min = value;
+    if (value > max) max = value;
+  }
+}
+
+String sensorKey(TemperatureReading t) => '${t.source}|${t.label}';
+
 class InventoryController extends ChangeNotifier {
   InventoryController(this._repository, {this.refreshInterval = const Duration(seconds: 5)});
 
@@ -23,6 +42,10 @@ class InventoryController extends ChangeNotifier {
 
   AsyncState<HardwareSnapshot> hardware = const AsyncState();
   AsyncState<SectionResult<List<InstalledPackage>>> software = const AsyncState();
+
+  final Map<String, SensorHistory> _temperatureHistory = {};
+
+  SensorHistory historyFor(TemperatureReading t) => _temperatureHistory.putIfAbsent(sensorKey(t), SensorHistory.new);
 
   Timer? _timer;
   bool get autoRefresh => _timer != null;
@@ -34,7 +57,9 @@ class InventoryController extends ChangeNotifier {
     hardware = hardware.startLoading();
     notifyListeners();
     try {
-      hardware = AsyncState(value: await _repository.loadHardware());
+      final snapshot = await _repository.loadHardware();
+      _recordTemperatures(snapshot);
+      hardware = AsyncState(value: snapshot);
     } catch (e) {
       hardware = AsyncState(value: hardware.value, error: e);
     }
@@ -51,6 +76,14 @@ class InventoryController extends ChangeNotifier {
       software = AsyncState(value: software.value, error: e);
     }
     notifyListeners();
+  }
+
+  void _recordTemperatures(HardwareSnapshot snapshot) {
+    final readings = snapshot.temperatures.data;
+    if (snapshot.temperatures.status != SectionStatus.ok || readings == null) return;
+    for (final t in readings) {
+      historyFor(t).add(t.celsius);
+    }
   }
 
   void setAutoRefresh(bool enabled) {

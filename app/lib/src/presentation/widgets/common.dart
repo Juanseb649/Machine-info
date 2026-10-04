@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities.dart';
+import '../theme/glass_theme.dart';
+import 'glass.dart';
 
 class InfoCard extends StatelessWidget {
-  const InfoCard({super.key, required this.title, required this.icon, required this.children});
+  const InfoCard({super.key, required this.title, required this.icon, required this.children, this.trailing});
 
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Icon(icon, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Text(title, style: theme.textTheme.titleMedium),
-            ]),
-            const SizedBox(height: 16),
-            ...children,
-          ],
-        ),
+    return GlassPanel(
+      padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            GlassIconBadge(icon: icon, size: 34),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
+            if (trailing != null) trailing!,
+          ]),
+          const SizedBox(height: 16),
+          ...children,
+        ],
       ),
     );
   }
@@ -43,16 +43,22 @@ class InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.glass;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 180,
-            child: Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            child: Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: tokens.textSecondary)),
           ),
-          Expanded(child: SelectableText(value, style: theme.textTheme.bodyLarge)),
+          Expanded(
+            child: SelectableText(
+              value,
+              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+            ),
+          ),
         ],
       ),
     );
@@ -65,28 +71,35 @@ class UsageBar extends StatelessWidget {
   final double ratio;
   final String caption;
 
-  Color _color(ColorScheme scheme) {
-    if (ratio >= 0.9) return scheme.error;
-    if (ratio >= 0.75) return Colors.orange;
-    return scheme.primary;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final tokens = context.glass;
+    final value = ratio.clamp(0.0, 1.0);
+    final color = tokens.levelColor(value);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: ratio.clamp(0, 1).toDouble(),
-            minHeight: 10,
-            color: _color(scheme),
-            backgroundColor: scheme.surfaceContainerHighest,
+        LayoutBuilder(
+          builder: (context, constraints) => Container(
+            height: 12,
+            decoration: BoxDecoration(color: tokens.track, borderRadius: BorderRadius.circular(8)),
+            alignment: Alignment.centerLeft,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(end: value),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOutCubic,
+              builder: (context, v, _) => Container(
+                width: constraints.maxWidth * v,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(colors: [Color.lerp(color, Colors.white, 0.25)!, color]),
+                  boxShadow: [BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 10)],
+                ),
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(caption, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
@@ -101,9 +114,9 @@ class TabScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(4, 8, 4, 32),
       children: [
-        for (final child in children) Padding(padding: const EdgeInsets.only(bottom: 16), child: child),
+        for (final child in children) Padding(padding: const EdgeInsets.only(bottom: 18), child: child),
       ],
     );
   }
@@ -119,17 +132,21 @@ class CenteredMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tokens = context.glass;
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: theme.colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(message, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
-            if (action != null) ...[const SizedBox(height: 16), action!],
-          ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 460),
+        child: GlassPanel(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 44, color: tokens.textTertiary),
+              const SizedBox(height: 16),
+              Text(message, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
+              if (action != null) ...[const SizedBox(height: 20), action!],
+            ],
+          ),
         ),
       ),
     );

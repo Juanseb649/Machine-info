@@ -1,3 +1,5 @@
+import '../domain/entities.dart';
+
 String formatBytes(int bytes) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
   var value = bytes.toDouble();
@@ -26,3 +28,17 @@ String formatMhz(double mhz) {
 }
 
 String orNa(String value) => value.isEmpty ? 'N/D' : value;
+
+double convertTemperature(double celsius, TemperatureUnit unit) =>
+    unit == TemperatureUnit.fahrenheit ? celsius * 9 / 5 + 32 : celsius;
+
+String temperatureSuffix(TemperatureUnit unit) => unit == TemperatureUnit.fahrenheit ? '°F' : '°C';
+
+String formatTemperature(double celsius, TemperatureUnit unit, {int decimals = 0}) =>
+    '${convertTemperature(celsius, unit).toStringAsFixed(decimals)}${temperatureSuffix(unit)}';
+
+String formatInstallDate(String isoDate) {
+  final parts = isoDate.split('-');
+  if (parts.length != 3) return isoDate.isEmpty ? 'N/D' : isoDate;
+  return '${parts[2]}/${parts[1]}/${parts[0]}';
+}
