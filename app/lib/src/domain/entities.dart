@@ -110,12 +110,88 @@ class InstalledPackage {
     required this.version,
     required this.publisher,
     required this.source,
+    this.installLocation = '',
+    this.iconPath = '',
+    this.uninstallCommand = '',
+    this.installDate = '',
+    this.sizeBytes = 0,
   });
 
   final String name;
   final String version;
   final String publisher;
   final String source;
+  final String installLocation;
+  final String iconPath;
+  final String uninstallCommand;
+  final String installDate;
+  final int sizeBytes;
+
+  String get id => '$source|$name|$version';
+  bool get canUninstall => uninstallCommand.isNotEmpty;
+  bool get hasIcon => iconPath.isNotEmpty;
+}
+
+class AppTechnology {
+  const AppTechnology({required this.language, required this.framework, this.evidence = const []});
+
+  static const unknown = AppTechnology(language: 'No determinado', framework: '');
+
+  final String language;
+  final String framework;
+  final List<String> evidence;
+
+  bool get isKnown => language != unknown.language;
+}
+
+enum UninstallOutcome { launched, completed, cancelled, unsupported, failed }
+
+class UninstallResult {
+  const UninstallResult(this.outcome, [this.message = '']);
+
+  final UninstallOutcome outcome;
+  final String message;
+}
+
+enum ThemePreference { automatic, light, dark }
+
+enum AutoThemeSource { system, schedule }
+
+enum TemperatureUnit { celsius, fahrenheit }
+
+class AppSettings {
+  const AppSettings({
+    this.themePreference = ThemePreference.automatic,
+    this.autoThemeSource = AutoThemeSource.system,
+    this.dayStartHour = 7,
+    this.nightStartHour = 19,
+    this.temperatureUnit = TemperatureUnit.celsius,
+    this.onboardingCompleted = false,
+  });
+
+  final ThemePreference themePreference;
+  final AutoThemeSource autoThemeSource;
+  final int dayStartHour;
+  final int nightStartHour;
+  final TemperatureUnit temperatureUnit;
+  final bool onboardingCompleted;
+
+  AppSettings copyWith({
+    ThemePreference? themePreference,
+    AutoThemeSource? autoThemeSource,
+    int? dayStartHour,
+    int? nightStartHour,
+    TemperatureUnit? temperatureUnit,
+    bool? onboardingCompleted,
+  }) =>
+      AppSettings(
+        themePreference: themePreference ?? this.themePreference,
+        autoThemeSource: autoThemeSource ?? this.autoThemeSource,
+        dayStartHour: dayStartHour ?? this.dayStartHour,
+        nightStartHour: nightStartHour ?? this.nightStartHour,
+        temperatureUnit: temperatureUnit ?? this.temperatureUnit,
+        onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      );
 }
 
 class HardwareSnapshot {

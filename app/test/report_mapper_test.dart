@@ -31,6 +31,21 @@ void main() {
             '{"software":{"status":"ok","data":[{"name":"git","version":"2.45","publisher":"","source":"dpkg"}]}}')
         as Map<String, dynamic>);
     expect(ok.data!.single.name, 'git');
+    expect(ok.data!.single.installLocation, '');
+    expect(ok.data!.single.canUninstall, isFalse);
+
+    final detailed = mapper.software(jsonDecode(
+            r'{"software":{"status":"ok","data":[{"name":"Code","version":"1.9","publisher":"Microsoft","source":"user",'
+            r'"installLocation":"C:\\Apps\\Code","iconPath":"C:\\Apps\\Code\\Code.exe,0",'
+            r'"uninstallCommand":"\"C:\\Apps\\Code\\unins000.exe\"","installDate":"2026-09-30","sizeBytes":4096}]}}')
+        as Map<String, dynamic>);
+    final code = detailed.data!.single;
+    expect(code.installLocation, r'C:\Apps\Code');
+    expect(code.iconPath, r'C:\Apps\Code\Code.exe,0');
+    expect(code.uninstallCommand, r'"C:\Apps\Code\unins000.exe"');
+    expect(code.installDate, '2026-09-30');
+    expect(code.sizeBytes, 4096);
+    expect(code.canUninstall, isTrue);
 
     final denied = mapper.software(
         jsonDecode('{"software":{"status":"permission_denied","data":[]}}') as Map<String, dynamic>);

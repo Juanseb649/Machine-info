@@ -95,6 +95,11 @@ class ReportMapper {
         version: _str(d['version']),
         publisher: _str(d['publisher']),
         source: _str(d['source']),
+        installLocation: _str(d['installLocation']),
+        iconPath: _str(d['iconPath']),
+        uninstallCommand: _str(d['uninstallCommand']),
+        installDate: _str(d['installDate']),
+        sizeBytes: _int(d['sizeBytes']),
       );
 
   String _str(Object? v) => v as String? ?? '';
