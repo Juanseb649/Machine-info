@@ -299,15 +299,24 @@ class _StepCard extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text('${index + 1} de $total', style: theme.textTheme.labelSmall),
-                  const Spacer(),
+                  Expanded(
+                    child: Text(
+                      '${index + 1} de $total',
+                      style: theme.textTheme.labelSmall,
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   if (!step.finalStep)
                     TextButton(
+                      style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
                       onPressed: onSkip,
                       child: Text('Omitir', style: TextStyle(color: tokens.textSecondary)),
                     ),
                   if (onBack != null && !step.finalStep)
                     IconButton(
+                      visualDensity: VisualDensity.compact,
                       tooltip: 'Anterior',
                       onPressed: onBack,
                       icon: Icon(Icons.chevron_left, color: tokens.textSecondary),

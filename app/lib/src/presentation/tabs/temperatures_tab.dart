@@ -481,13 +481,25 @@ class _SensorTile extends StatelessWidget {
           const SizedBox(height: 10),
           Sparkline(samples: h.samples, color: color, height: 30),
           const SizedBox(height: 8),
-          Row(children: [
-            Text('Mín. ${fmt(h.min)}', style: theme.textTheme.bodySmall),
-            const Spacer(),
-            Text('Máx. ${fmt(h.max)}', style: theme.textTheme.bodySmall),
-            const Spacer(),
-            Text('Crít. ${formatTemperature(sensor.critical, unit)}', style: theme.textTheme.bodySmall),
-          ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (final label in [
+                'Mín. ${fmt(h.min)}',
+                'Máx. ${fmt(h.max)}',
+                'Crít. ${formatTemperature(sensor.critical, unit)}',
+              ])
+                Flexible(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodySmall,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
