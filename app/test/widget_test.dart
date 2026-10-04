@@ -10,6 +10,7 @@ import 'package:machine_info/src/domain/entities.dart';
 import 'package:machine_info/src/domain/machine_info_repository.dart';
 import 'package:machine_info/src/domain/settings_repository.dart';
 import 'package:machine_info/src/domain/software_manager.dart';
+import 'package:machine_info/src/presentation/splash/splash_gate.dart';
 
 class FakeRepository implements MachineInfoRepository {
   @override
@@ -105,6 +106,7 @@ Future<(InventoryController, SettingsController, FakeSoftwareManager)> _pumpApp(
     controller: controller,
     settings: settings,
     software: SoftwareController(manager),
+    showSplash: false,
   ));
   await controller.loadAll();
   await tester.pumpAndSettle();
@@ -170,5 +172,30 @@ void main() {
     await tester.tap(find.text('Noche'));
     await tester.pumpAndSettle();
     expect(settings.themeMode, ThemeMode.dark);
+  });
+
+  testWidgets('shows the logo splash until the hardware is loaded', (tester) async {
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+
+    final settings = SettingsController(MemorySettingsRepository(AppSettings(onboardingCompleted: true)));
+    await settings.load();
+    final controller = InventoryController(FakeRepository());
+    await tester.pumpWidget(MachineInfoApp(
+      controller: controller,
+      settings: settings,
+      software: SoftwareController(FakeSoftwareManager()),
+    ));
+
+    expect(find.byType(SplashScreen), findsOneWidget);
+    expect(find.text('Hardware y software, de un vistazo.'), findsOneWidget);
+
+    await controller.loadAll();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.byType(SplashScreen), findsNothing);
   });
 }
