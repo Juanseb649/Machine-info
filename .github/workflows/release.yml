@@ -30,7 +30,7 @@ jobs:
         working-directory: app
         run: |
           flutter pub get
-          flutter test
+          flutter test --reporter expanded
 
   windows:
     needs: test
