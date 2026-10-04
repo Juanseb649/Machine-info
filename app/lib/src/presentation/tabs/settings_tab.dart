@@ -143,7 +143,7 @@ class SettingsTab extends StatelessWidget {
         title: 'Acerca de',
         icon: Icons.info_outline,
         children: [
-          const InfoRow('Aplicación', 'Machine Info 0.2.0'),
+          const InfoRow('Aplicación', 'Machine Info 0.3.0'),
           InfoRow('Núcleo nativo', nativeVersion.isEmpty ? 'N/D' : 'machineinfo $nativeVersion'),
           const InfoRow('Atajos', 'Ctrl + R actualizar · Ctrl + 1…7 cambiar de sección'),
         ],

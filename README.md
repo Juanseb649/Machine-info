@@ -8,6 +8,17 @@ Aplicación de escritorio multiplataforma (Windows, macOS, Linux) que muestra el
 - **Diseño**: estilo *liquid glass* (paneles translúcidos con desenfoque), modo día/noche automático (según el sistema o
   la hora) o fijo desde **Ajustes**, y un tutorial guiado en el primer inicio.
 
+## Descargas
+
+Las versiones para Windows, macOS y Linux están en
+[Releases](https://github.com/Juanseb649/Machine-info/releases). Se generan automáticamente con
+GitHub Actions (`.github/workflows/release.yml`) al publicar una etiqueta `vX.Y.Z`:
+
+```bash
+git tag v0.3.0
+git push origin v0.3.0
+```
+
 ## Estructura
 
 ```
