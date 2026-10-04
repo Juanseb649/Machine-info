@@ -8,6 +8,7 @@ import 'src/infrastructure/ffi_machine_info_repository.dart';
 import 'src/infrastructure/native_software_manager.dart';
 import 'src/infrastructure/shared_prefs_settings_repository.dart';
 import 'src/presentation/home_page.dart';
+import 'src/presentation/splash/splash_gate.dart';
 import 'src/presentation/theme/glass_theme.dart';
 
 Future<void> main() async {
@@ -39,12 +40,14 @@ class MachineInfoApp extends StatelessWidget {
     required this.settings,
     required this.software,
     this.nativeVersion = '',
+    this.showSplash = true,
   });
 
   final InventoryController controller;
   final SettingsController settings;
   final SoftwareController software;
   final String nativeVersion;
+  final bool showSplash;
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +61,15 @@ class MachineInfoApp extends StatelessWidget {
         themeMode: settings.themeMode,
         themeAnimationDuration: const Duration(milliseconds: 450),
         themeAnimationCurve: Curves.easeInOutCubic,
-        home: HomePage(
-          controller: controller,
-          settings: settings,
-          software: software,
-          nativeVersion: nativeVersion,
-        ),
+        home: showSplash ? SplashGate(controller: controller, child: _home()) : _home(),
       ),
     );
   }
+
+  Widget _home() => HomePage(
+        controller: controller,
+        settings: settings,
+        software: software,
+        nativeVersion: nativeVersion,
+      );
 }

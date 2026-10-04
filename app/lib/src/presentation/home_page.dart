@@ -293,7 +293,7 @@ class _Sidebar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: compact ? MainAxisAlignment.center : MainAxisAlignment.start,
                 children: [
-                  const GlassIconBadge(icon: Icons.memory, size: 40),
+                  Image.asset('assets/branding/app_icon.png', width: 40, height: 40, filterQuality: FilterQuality.medium),
                   if (!compact) ...[
                     const SizedBox(width: 12),
                     Expanded(
@@ -402,7 +402,7 @@ class _NavItemState extends State<_NavItem> {
                       ? [BoxShadow(color: tokens.accent.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 3))]
                       : null,
                 ),
-                child: Icon(widget.section.icon, size: 19, color: selected ? Colors.white : color),
+                child: Icon(widget.section.icon, size: 19, color: selected ? onColor(tokens.accent) : color),
               ),
               if (!widget.compact) ...[
                 const SizedBox(width: 12),

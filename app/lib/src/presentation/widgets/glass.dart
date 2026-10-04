@@ -192,7 +192,7 @@ class GlassIconBadge extends StatelessWidget {
         ),
         boxShadow: [BoxShadow(color: base.withValues(alpha: 0.35), blurRadius: 12, offset: const Offset(0, 4))],
       ),
-      child: Icon(icon, size: size * 0.55, color: Colors.white),
+      child: Icon(icon, size: size * 0.55, color: onColor(base)),
     );
   }
 }
@@ -210,7 +210,7 @@ class GlassPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.glass;
     final accent = color ?? tokens.accent;
-    final foreground = selected ? Colors.white : (color ?? tokens.textSecondary);
+    final foreground = selected ? onColor(accent) : (color ?? tokens.textSecondary);
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
@@ -258,7 +258,7 @@ class GlassButton extends StatelessWidget {
     final tokens = context.glass;
     final base = color ?? tokens.accent;
     final enabled = onPressed != null;
-    final foreground = filled ? Colors.white : base;
+    final foreground = filled ? onColor(base) : base;
     return Opacity(
       opacity: enabled ? 1 : 0.5,
       child: Material(

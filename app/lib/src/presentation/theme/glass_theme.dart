@@ -47,49 +47,49 @@ class GlassTokens extends ThemeExtension<GlassTokens> {
   final Color popover;
 
   static const light = GlassTokens(
-    backgroundTop: Color(0xFFE9EFFB),
-    backgroundBottom: Color(0xFFF5F2FF),
-    blobs: [Color(0x997CC4FF), Color(0x80B59CFF), Color(0x708EF0D9)],
+    backgroundTop: Color(0xFFF7F4EE),
+    backgroundBottom: Color(0xFFEFE7D6),
+    blobs: [Color(0x662E8C80), Color(0x59E3A23B), Color(0x47D45B47)],
     glassFill: Color(0x8CFFFFFF),
-    glassFillStrong: Color(0xC7FFFFFF),
-    glassEdgeLight: Color(0xF2FFFFFF),
+    glassFillStrong: Color(0xD1FFFFFF),
+    glassEdgeLight: Color(0xE6FFFFFF),
     glassEdgeDark: Color(0x40FFFFFF),
-    shadow: Color(0x1A1E3A8A),
-    scrim: Color(0x730B1324),
-    textPrimary: Color(0xFF0B1324),
-    textSecondary: Color(0xFF4A5568),
-    textTertiary: Color(0xFF8A94A6),
-    accent: Color(0xFF0A84FF),
-    accentSoft: Color(0x240A84FF),
-    success: Color(0xFF28C76F),
-    warning: Color(0xFFFF9F0A),
-    danger: Color(0xFFFF3B30),
-    info: Color(0xFF32ADE6),
-    track: Color(0x1F0B1324),
-    popover: Color(0xF5F7F9FD),
+    shadow: Color(0x2422211E),
+    scrim: Color(0x73141413),
+    textPrimary: Color(0xFF22211E),
+    textSecondary: Color(0xFF5E5A52),
+    textTertiary: Color(0xFF6E695F),
+    accent: Color(0xFF2E8C80),
+    accentSoft: Color(0x262E8C80),
+    success: Color(0xFF2E8C80),
+    warning: Color(0xFFE3A23B),
+    danger: Color(0xFFD45B47),
+    info: Color(0xFF5B9BB5),
+    track: Color(0x1A22211E),
+    popover: Color(0xF7F7F4EE),
   );
 
   static const dark = GlassTokens(
-    backgroundTop: Color(0xFF070B16),
-    backgroundBottom: Color(0xFF0E1022),
-    blobs: [Color(0x731E6BFF), Color(0x667B3FF2), Color(0x4700C2A8)],
-    glassFill: Color(0x12FFFFFF),
-    glassFillStrong: Color(0x1FFFFFFF),
-    glassEdgeLight: Color(0x47FFFFFF),
-    glassEdgeDark: Color(0x0FFFFFFF),
-    shadow: Color(0x73000000),
+    backgroundTop: Color(0xFF141413),
+    backgroundBottom: Color(0xFF1B1B19),
+    blobs: [Color(0x662E8C80), Color(0x42E3A23B), Color(0x38D45B47)],
+    glassFill: Color(0x0FFFFFFF),
+    glassFillStrong: Color(0x1CFFFFFF),
+    glassEdgeLight: Color(0x2EF3ECDD),
+    glassEdgeDark: Color(0x0DF3ECDD),
+    shadow: Color(0x80000000),
     scrim: Color(0x99000000),
-    textPrimary: Color(0xFFF2F5FA),
-    textSecondary: Color(0xFFA3ADC2),
-    textTertiary: Color(0xFF6B7488),
-    accent: Color(0xFF409CFF),
-    accentSoft: Color(0x33409CFF),
-    success: Color(0xFF30D158),
-    warning: Color(0xFFFF9F0A),
-    danger: Color(0xFFFF453A),
-    info: Color(0xFF64D2FF),
-    track: Color(0x1FFFFFFF),
-    popover: Color(0xF5151A2B),
+    textPrimary: Color(0xFFF3ECDD),
+    textSecondary: Color(0xFFB9B2A4),
+    textTertiary: Color(0xFF8E887C),
+    accent: Color(0xFF4FB3A5),
+    accentSoft: Color(0x334FB3A5),
+    success: Color(0xFF4FB3A5),
+    warning: Color(0xFFEDB458),
+    danger: Color(0xFFE2735F),
+    info: Color(0xFF7DB6CC),
+    track: Color(0x1FF3ECDD),
+    popover: Color(0xF71F1F1C),
   );
 
   Color levelColor(double ratio) {
@@ -151,6 +151,9 @@ class GlassTokens extends ThemeExtension<GlassTokens> {
   }
 }
 
+Color onColor(Color background) =>
+    ThemeData.estimateBrightnessForColor(background) == Brightness.dark ? Colors.white : const Color(0xFF141413);
+
 extension GlassContext on BuildContext {
   GlassTokens get glass => Theme.of(this).extension<GlassTokens>()!;
 }
@@ -162,7 +165,7 @@ ThemeData buildGlassTheme(Brightness brightness) {
     brightness: brightness,
   ).copyWith(
     primary: tokens.accent,
-    onPrimary: Colors.white,
+    onPrimary: onColor(tokens.accent),
     error: tokens.danger,
     surface: tokens.backgroundTop,
     onSurface: tokens.textPrimary,

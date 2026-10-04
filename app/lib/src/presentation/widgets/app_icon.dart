@@ -6,14 +6,14 @@ import '../../application/software_controller.dart';
 import '../../domain/entities.dart';
 
 const _monogramPalettes = [
-  [Color(0xFF5AC8FA), Color(0xFF0A84FF)],
-  [Color(0xFFBF5AF2), Color(0xFF5E5CE6)],
-  [Color(0xFFFF9F0A), Color(0xFFFF375F)],
-  [Color(0xFF30D158), Color(0xFF00A3A3)],
-  [Color(0xFFFF6482), Color(0xFFBF5AF2)],
-  [Color(0xFF64D2FF), Color(0xFF30B0C7)],
-  [Color(0xFFFFD60A), Color(0xFFFF9F0A)],
-  [Color(0xFF8E8E93), Color(0xFF48484A)],
+  [Color(0xFF3A9D90), Color(0xFF23766C)],
+  [Color(0xFFEDB458), Color(0xFFC9861F)],
+  [Color(0xFFE2735F), Color(0xFFB84A37)],
+  [Color(0xFF55534C), Color(0xFF22211E)],
+  [Color(0xFF8EDACF), Color(0xFF2E8C80)],
+  [Color(0xFFF4A797), Color(0xFFD45B47)],
+  [Color(0xFFF8D894), Color(0xFFE3A23B)],
+  [Color(0xFF7DB6CC), Color(0xFF4A7F96)],
 ];
 
 class AppIcon extends StatelessWidget {
