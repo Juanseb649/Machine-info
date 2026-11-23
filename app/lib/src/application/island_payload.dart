@@ -90,4 +90,50 @@ class IslandPayloadBuilder {
             symbol: 'internaldrive',
           ),
       ];
+
+  /// The reading shown on the left of the camera: the one the person chose,
+  /// or the first available one when that section is unsupported.
+  IslandReading? primary(List<IslandReading> all, IslandPrimaryMetric preferred) {
+    if (all.isEmpty) return null;
+    for (final r in all) {
+      if (r.metric == preferred) return r;
+    }
+    return all.first;
+  }
+
+  /// The reading shown on the right of the camera: the most urgent of the
+  /// others, so a hot sensor or full disk surfaces without opening the island.
+  IslandReading? secondary(List<IslandReading> all, IslandReading? primary) {
+    IslandReading? best;
+    for (final r in all) {
+      if (identical(r, primary)) continue;
+      if (best == null || r.level.index > best.level.index) best = r;
+    }
+    return best;
+  }
+
+  Map<String, Object?> build(
+    IslandMetrics metrics, {
+    required TemperatureUnit unit,
+    required IslandPrimaryMetric preferred,
+  }) {
+    final all = readings(metrics, unit);
+    final left = primary(all, preferred);
+    final right = secondary(all, left);
+    final worst = all.fold<MetricLevel>(
+        MetricLevel.normal, (acc, r) => r.level.index > acc.index ? r.level : acc);
+    return {
+      'title': 'Machine Info',
+      'hostname': metrics.hostname,
+      'uptime': metrics.uptime == null ? '' : formatDuration(metrics.uptime!),
+      'updatedAt': _clock(metrics.collectedAt),
+      'level': worst.name,
+      'primary': left?.toMap(),
+      'secondary': right?.toMap(),
+      'readings': [for (final r in all) r.toMap()],
+    };
+  }
+
+  static String _clock(DateTime t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:${t.second.toString().padLeft(2, '0')}';
 }
