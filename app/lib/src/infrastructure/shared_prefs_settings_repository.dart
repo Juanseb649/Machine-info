@@ -12,6 +12,9 @@ class SharedPrefsSettingsRepository implements SettingsRepository {
   static const _nightStart = 'night_start_hour';
   static const _unit = 'temperature_unit';
   static const _onboarding = 'onboarding_completed';
+  static const _islandEnabled = 'island_enabled';
+  static const _islandMetric = 'island_primary_metric';
+  static const _islandRefresh = 'island_refresh_seconds';
 
   @override
   Future<AppSettings> load() async {
@@ -24,6 +27,10 @@ class SharedPrefsSettingsRepository implements SettingsRepository {
       nightStartHour: prefs.getInt(_nightStart) ?? defaults.nightStartHour,
       temperatureUnit: _enum(TemperatureUnit.values, prefs.getString(_unit), defaults.temperatureUnit),
       onboardingCompleted: prefs.getBool(_onboarding) ?? defaults.onboardingCompleted,
+      islandEnabled: prefs.getBool(_islandEnabled) ?? defaults.islandEnabled,
+      islandPrimaryMetric:
+          _enum(IslandPrimaryMetric.values, prefs.getString(_islandMetric), defaults.islandPrimaryMetric),
+      islandRefreshSeconds: (prefs.getInt(_islandRefresh) ?? defaults.islandRefreshSeconds).clamp(1, 10),
     );
   }
 
@@ -36,6 +43,9 @@ class SharedPrefsSettingsRepository implements SettingsRepository {
     await prefs.setInt(_nightStart, settings.nightStartHour);
     await prefs.setString(_unit, settings.temperatureUnit.name);
     await prefs.setBool(_onboarding, settings.onboardingCompleted);
+    await prefs.setBool(_islandEnabled, settings.islandEnabled);
+    await prefs.setString(_islandMetric, settings.islandPrimaryMetric.name);
+    await prefs.setInt(_islandRefresh, settings.islandRefreshSeconds);
   }
 
   T _enum<T extends Enum>(List<T> values, String? name, T fallback) {
