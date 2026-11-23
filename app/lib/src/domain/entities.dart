@@ -159,6 +159,9 @@ enum AutoThemeSource { system, schedule }
 
 enum TemperatureUnit { celsius, fahrenheit }
 
+/// Reading shown next to the camera when the Dynamic Island is collapsed.
+enum IslandPrimaryMetric { cpu, memory, temperature, disk }
+
 class AppSettings {
   const AppSettings({
     this.themePreference = ThemePreference.automatic,
@@ -167,6 +170,9 @@ class AppSettings {
     this.nightStartHour = 19,
     this.temperatureUnit = TemperatureUnit.celsius,
     this.onboardingCompleted = false,
+    this.islandEnabled = true,
+    this.islandPrimaryMetric = IslandPrimaryMetric.cpu,
+    this.islandRefreshSeconds = 2,
   });
 
   final ThemePreference themePreference;
@@ -175,6 +181,9 @@ class AppSettings {
   final int nightStartHour;
   final TemperatureUnit temperatureUnit;
   final bool onboardingCompleted;
+  final bool islandEnabled;
+  final IslandPrimaryMetric islandPrimaryMetric;
+  final int islandRefreshSeconds;
 
   AppSettings copyWith({
     ThemePreference? themePreference,
@@ -183,6 +192,9 @@ class AppSettings {
     int? nightStartHour,
     TemperatureUnit? temperatureUnit,
     bool? onboardingCompleted,
+    bool? islandEnabled,
+    IslandPrimaryMetric? islandPrimaryMetric,
+    int? islandRefreshSeconds,
   }) =>
       AppSettings(
         themePreference: themePreference ?? this.themePreference,
@@ -191,6 +203,9 @@ class AppSettings {
         nightStartHour: nightStartHour ?? this.nightStartHour,
         temperatureUnit: temperatureUnit ?? this.temperatureUnit,
         onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+        islandEnabled: islandEnabled ?? this.islandEnabled,
+        islandPrimaryMetric: islandPrimaryMetric ?? this.islandPrimaryMetric,
+        islandRefreshSeconds: islandRefreshSeconds ?? this.islandRefreshSeconds,
       );
 }
 

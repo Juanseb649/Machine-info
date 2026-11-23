@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../application/inventory_controller.dart';
+import '../application/island_controller.dart';
 import '../application/settings_controller.dart';
 import '../application/software_controller.dart';
 import 'onboarding/onboarding_overlay.dart';
@@ -21,12 +22,14 @@ class HomePage extends StatefulWidget {
     required this.settings,
     required this.software,
     this.nativeVersion = '',
+    this.island,
   });
 
   final InventoryController controller;
   final SettingsController settings;
   final SoftwareController software;
   final String nativeVersion;
+  final IslandController? island;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -106,7 +109,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         OnboardingStep(
           icon: Icons.settings_outlined,
           title: 'Ajustes',
-          body: 'Elige modo día, noche o automático, la unidad de temperatura y vuelve a ver este tutorial.',
+          body: 'Elige modo día, noche o automático, la unidad de temperatura, '
+              'la isla dinámica que aparece junto a la cámara al minimizar y vuelve a ver este tutorial.',
           targets: [_navKeys[AppSection.settings]!],
           section: AppSection.settings,
         ),
@@ -243,6 +247,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         settings: widget.settings,
         inventory: controller,
         nativeVersion: widget.nativeVersion,
+        island: widget.island,
       ),
     ];
   }

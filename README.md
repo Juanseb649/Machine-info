@@ -37,9 +37,10 @@ machine-info/
 │   ├── linux/ windows/ macos/      Compilan y empaquetan la librería con la app
 └── app/                            App Flutter
     └── lib/src/
-        ├── domain/                 Entidades + puerto MachineInfoRepository
-        ├── application/            InventoryController
+        ├── domain/                 Entidades + puertos MachineInfoRepository e IslandHost
+        ├── application/            InventoryController · IslandController + IslandPayloadBuilder
         ├── infrastructure/         FfiMachineInfoRepository + ReportMapper (JSON → entidades)
+        │                           MethodChannelIslandHost (macOS) · UnsupportedIslandHost (Windows/Linux)
         └── presentation/           Barra lateral + secciones: Sistema, CPU, Memoria, Almacenamiento,
                                     Temperaturas, Software, Ajustes · theme/ (liquid glass) · onboarding/
 ```
@@ -133,6 +134,36 @@ Flutter compila el núcleo en C automáticamente (CMake en Windows/Linux, CocoaP
 
 Para usar una librería compilada a mano, define la variable de entorno `MACHINEINFO_LIB` con su ruta.
 
+## Isla dinámica (macOS)
+
+Al **minimizar** la ventana (o ocultar la app con `Cmd + H`) aparece una isla negra pegada al notch
+de la cámara con lecturas en vivo:
+
+- **Compacta**: a la izquierda de la cámara la métrica que elijas en *Ajustes → Isla dinámica*
+  (CPU, RAM, temperatura o disco) y a la derecha la más urgente de las demás.
+- **Expandida** (pasa el ratón o haz clic): CPU, RAM, sensor más caliente y disco del sistema con
+  su detalle, el nombre del equipo, el tiempo encendido y un botón para volver a la app.
+- Los acentos cambian de verde a ámbar y rojo según umbrales; con una lectura crítica la isla
+  muestra un borde rojo aunque esté cerrada.
+- Doble clic o **Abrir Machine Info** restaura la ventana; el menú contextual permite ocultarla
+  hasta el próximo minimizado o salir.
+- Se oculta sola sobre apps a pantalla completa, se recoloca al cambiar de monitor y respeta
+  *Reducir movimiento*. En pantallas sin notch se dibuja un notch virtual en el centro de la barra.
+
+```
+IslandController (Dart) ── muestrea cada 1/2/5 s ──► IslandPayloadBuilder (formato, unidades, niveles)
+   ⇅ MethodChannel "machine_info/island"   show · hide · update | windowMinimized · windowRestored ·
+                                            islandTapped · islandDismissed
+macos/Runner/Island/  IslandChannel → IslandWindowController → IslandPanel (NSPanel no activable)
+                      → IslandRootView (SwiftUI: NotchShape, IslandCompactView, IslandExpandedView)
+```
+
+Dart decide cuándo se ve la isla y formatea los textos; Swift solo dibuja. Mientras la isla está
+visible se pausa el refresco en vivo de la ventana principal para no leer el hardware dos veces.
+
+En **Windows y Linux** no hay isla flotante: `UnsupportedIslandHost` lo informa y *Ajustes* muestra
+una vista previa de cómo se vería, con el interruptor desactivado.
+
 ## Notas
 
 - **Temperaturas en Windows**: muchos equipos no exponen sensores por WMI; `MSAcpi_ThermalZoneTemperature`
@@ -143,9 +174,12 @@ Para usar una librería compilada a mano, define la variable de entorno `MACHINE
 ## Atajos
 
 - `Ctrl + R` actualizar · `Ctrl + 1…7` cambiar de sección · flechas / `Esc` dentro del tutorial.
+- Isla dinámica: pasar el ratón la abre · clic la alterna · doble clic vuelve a la app.
 
 ## Ideas siguientes
 
 - Apps de Microsoft Store (AppX) en Windows y salud SMART de los discos.
 - GPU y batería como nuevos puertos/adaptadores.
 - Exportar el reporte a JSON/PDF desde la interfaz.
+- Isla en Windows (ventana *topmost* sobre la barra de tareas) y en Linux (capa de GTK/layer-shell).
+- Procesos que más consumen dentro de la isla expandida.

@@ -62,6 +62,14 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> setTemperatureUnit(TemperatureUnit value) => _update(_settings.copyWith(temperatureUnit: value));
 
+  Future<void> setIslandEnabled(bool value) => _update(_settings.copyWith(islandEnabled: value));
+
+  Future<void> setIslandPrimaryMetric(IslandPrimaryMetric value) =>
+      _update(_settings.copyWith(islandPrimaryMetric: value));
+
+  Future<void> setIslandRefreshSeconds(int seconds) =>
+      _update(_settings.copyWith(islandRefreshSeconds: seconds.clamp(1, 10)));
+
   Future<void> completeOnboarding() => _update(_settings.copyWith(onboardingCompleted: true));
 
   Future<void> restartOnboarding() => _update(_settings.copyWith(onboardingCompleted: false));
