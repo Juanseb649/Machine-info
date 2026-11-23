@@ -9,6 +9,9 @@ final class IslandWindowController {
   /// Called when the person asks to go back to the app.
   var onOpen: () -> Void = {}
 
+  /// Called when the person hides the island from its menu.
+  var onDismiss: () -> Void = {}
+
   private lazy var panel: IslandPanel = {
     let panel = IslandPanel()
     let host = NSHostingView(rootView: IslandRootView(state: state, actions: makeActions()))
@@ -90,7 +93,12 @@ final class IslandWindowController {
       toggle: { [weak self] in
         guard let self = self else { return }
         self.setExpanded(!self.state.isExpanded)
-      }
+      },
+      dismiss: { [weak self] in
+        self?.hide()
+        self?.onDismiss()
+      },
+      quit: { NSApp.terminate(nil) }
     )
   }
 }

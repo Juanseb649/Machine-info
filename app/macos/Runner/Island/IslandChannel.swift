@@ -19,6 +19,7 @@ final class IslandChannel {
       self?.handle(call, result: result)
     }
     island.onOpen = { [weak self] in self?.restoreWindow() }
+    island.onDismiss = { [weak self] in self?.send("islandDismissed") }
     observeWindow(window)
   }
 
