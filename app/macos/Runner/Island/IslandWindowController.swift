@@ -50,6 +50,15 @@ final class IslandWindowController {
     }
   }
 
+  /// Re-measures the notch and re-centres the panel, e.g. after a display
+  /// is connected, disconnected or changes resolution.
+  func screensChanged() {
+    guard state.isVisible else { return }
+    screen = NotchGeometry.preferredScreen()
+    if let screen = screen { state.geometry = NotchGeometry(screen: screen) }
+    place(size: state.isExpanded ? NotchGeometry.expandedSize : state.geometry.compactSize)
+  }
+
   func update(_ payload: IslandPayload) {
     state.payload = payload
   }

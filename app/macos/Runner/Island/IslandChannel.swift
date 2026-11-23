@@ -29,6 +29,10 @@ final class IslandChannel {
 
   private func observeWindow(_ window: NSWindow) {
     let center = NotificationCenter.default
+    observers.append(center.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
+                                        object: nil, queue: .main) { [weak self] _ in
+      self?.island.screensChanged()
+    })
     observers.append(center.addObserver(forName: NSWindow.didMiniaturizeNotification,
                                         object: window, queue: .main) { [weak self] _ in
       self?.send("windowMinimized")
