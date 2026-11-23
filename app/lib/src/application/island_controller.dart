@@ -71,7 +71,15 @@ class IslandController extends ChangeNotifier {
     _sync();
   }
 
-  void _onSettingsChanged() => _sync();
+  Duration? _activeInterval;
+
+  void _onSettingsChanged() {
+    if (_visible) {
+      if (_activeInterval != _interval) _startSampling();
+      _push();
+    }
+    _sync();
+  }
 
   Future<void> _sync() async {
     final show = _shouldShow;
@@ -93,12 +101,14 @@ class IslandController extends ChangeNotifier {
 
   void _startSampling() {
     _timer?.cancel();
+    _activeInterval = _interval;
     _timer = Timer.periodic(_interval, (_) => sample());
   }
 
   void _stopSampling() {
     _timer?.cancel();
     _timer = null;
+    _activeInterval = null;
   }
 
   /// Reads the hardware once and sends it to the island. Overlapping calls
