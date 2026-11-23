@@ -109,7 +109,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         OnboardingStep(
           icon: Icons.settings_outlined,
           title: 'Ajustes',
-          body: 'Elige modo día, noche o automático, la unidad de temperatura y vuelve a ver este tutorial.',
+          body: 'Elige modo día, noche o automático, la unidad de temperatura, '
+              'la isla dinámica que aparece junto a la cámara al minimizar y vuelve a ver este tutorial.',
           targets: [_navKeys[AppSection.settings]!],
           section: AppSection.settings,
         ),
