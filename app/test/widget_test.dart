@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:machine_info/main.dart';
 import 'package:machine_info/src/application/inventory_controller.dart';
+import 'package:machine_info/src/application/island_controller.dart';
 import 'package:machine_info/src/application/settings_controller.dart';
 import 'package:machine_info/src/application/software_controller.dart';
 import 'package:machine_info/src/domain/entities.dart';
 import 'package:machine_info/src/domain/machine_info_repository.dart';
 import 'package:machine_info/src/domain/settings_repository.dart';
 import 'package:machine_info/src/domain/software_manager.dart';
+import 'package:machine_info/src/infrastructure/unsupported_island_host.dart';
 import 'package:machine_info/src/presentation/splash/splash_gate.dart';
+import 'package:machine_info/src/presentation/widgets/island_preview.dart';
+
+import 'island_controller_test.dart' show FakeIslandHost;
 
 class FakeRepository implements MachineInfoRepository {
   @override
@@ -89,6 +94,7 @@ Future<(InventoryController, SettingsController, FakeSoftwareManager)> _pumpApp(
   WidgetTester tester, {
   required bool onboardingCompleted,
   MemorySettingsRepository? repository,
+  IslandController? Function(SettingsController settings)? island,
 }) async {
   tester.view.physicalSize = const Size(1400, 900);
   tester.view.devicePixelRatio = 1;
@@ -107,6 +113,7 @@ Future<(InventoryController, SettingsController, FakeSoftwareManager)> _pumpApp(
     settings: settings,
     software: SoftwareController(manager),
     showSplash: false,
+    island: island?.call(settings),
   ));
   await controller.loadAll();
   await tester.pumpAndSettle();
@@ -197,5 +204,55 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
     expect(find.byType(SplashScreen), findsNothing);
+  });
+
+  testWidgets('island settings explain it is macOS only when unsupported', (tester) async {
+    IslandController? island;
+    await _pumpApp(tester, onboardingCompleted: true, island: (settings) {
+      island = IslandController(
+        host: const UnsupportedIslandHost(),
+        settings: settings,
+        repository: FakeRepository(),
+      );
+      return island;
+    });
+    await island!.start();
+
+    await tester.tap(find.text('Ajustes'));
+    await tester.pumpAndSettle();
+    expect(find.text('Isla dinámica'), findsOneWidget);
+    expect(find.text('Solo en macOS'), findsOneWidget);
+    expect(find.byType(IslandPreview), findsOneWidget);
+    final toggle = tester.widget<Switch>(find.descendant(
+      of: find.ancestor(of: find.text('Mostrar al minimizar'), matching: find.byType(Row)).first,
+      matching: find.byType(Switch),
+    ));
+    expect(toggle.onChanged, isNull);
+    island!.dispose();
+  });
+
+  testWidgets('island settings change the reading next to the camera', (tester) async {
+    IslandController? island;
+    final (_, settings, _) = await _pumpApp(tester, onboardingCompleted: true, island: (settings) {
+      island = IslandController(host: FakeIslandHost(), settings: settings, repository: FakeRepository());
+      return island;
+    });
+    await island!.start();
+
+    await tester.tap(find.text('Ajustes'));
+    await tester.pumpAndSettle();
+    expect(find.text('macOS'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Temp.'));
+    await tester.tap(find.text('Temp.'));
+    await tester.pumpAndSettle();
+    expect(settings.settings.islandPrimaryMetric, IslandPrimaryMetric.temperature);
+    // The fake hardware's hottest sensor is 58 °C.
+    expect(find.descendant(of: find.byType(IslandPreview), matching: find.text('58°C')), findsOneWidget);
+
+    await tester.tap(find.text('5 s'));
+    await tester.pumpAndSettle();
+    expect(settings.settings.islandRefreshSeconds, 5);
+    island!.dispose();
   });
 }
