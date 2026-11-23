@@ -1,3 +1,5 @@
+import 'entities.dart';
+
 /// Severity of a live reading, used to tint the Dynamic Island.
 enum MetricLevel { normal, elevated, critical }
 
@@ -55,6 +57,28 @@ class IslandMetrics {
   double? get memoryRatio => _ratio(memoryUsedBytes, memoryTotalBytes);
   double? get diskRatio => _ratio(diskUsedBytes, diskTotalBytes);
 
+  /// Builds the island readings from a full hardware snapshot. Sections that
+  /// failed or are unsupported simply leave their reading empty.
+  factory IslandMetrics.fromSnapshot(HardwareSnapshot snapshot) {
+    final cpu = snapshot.cpu.data;
+    final memory = snapshot.memory.data;
+    final disk = primaryDisk(snapshot.disks.data ?? const []);
+    final hottest = hottestReading(snapshot.temperatures.data ?? const []);
+    final os = snapshot.os.data;
+    return IslandMetrics(
+      collectedAt: snapshot.collectedAt,
+      hostname: os?.hostname ?? '',
+      cpuUsage: cpu == null ? null : (cpu.usagePercent / 100).clamp(0.0, 1.0),
+      memoryUsedBytes: memory?.usedBytes,
+      memoryTotalBytes: memory?.totalBytes,
+      diskUsedBytes: disk?.usedBytes,
+      diskTotalBytes: disk?.totalBytes,
+      hottestCelsius: hottest?.celsius,
+      hottestLabel: hottest?.label ?? '',
+      uptime: os?.uptime,
+    );
+  }
+
   bool get isEmpty =>
       cpuUsage == null && memoryRatio == null && diskRatio == null && hottestCelsius == null;
 
@@ -62,4 +86,29 @@ class IslandMetrics {
     if (used == null || total == null || total <= 0) return null;
     return (used / total).clamp(0.0, 1.0);
   }
+}
+
+/// The disk the island reports: the system volume when it can be recognised,
+/// otherwise the largest fixed disk, otherwise the largest of any kind.
+DiskInfo? primaryDisk(List<DiskInfo> disks) {
+  final usable = disks.where((d) => d.totalBytes > 0).toList();
+  if (usable.isEmpty) return null;
+  for (final d in usable) {
+    final mount = d.mountPoint.toLowerCase();
+    if (mount == '/' || mount == r'c:\' || mount == 'c:') return d;
+  }
+  final fixed = usable.where((d) => d.kind == DiskKind.fixed).toList();
+  final pool = fixed.isEmpty ? usable : fixed;
+  pool.sort((a, b) => b.totalBytes.compareTo(a.totalBytes));
+  return pool.first;
+}
+
+/// The warmest sensor, ignoring readings that are clearly bogus.
+TemperatureReading? hottestReading(List<TemperatureReading> readings) {
+  TemperatureReading? best;
+  for (final t in readings) {
+    if (t.celsius.isNaN || t.celsius <= 0 || t.celsius > 150) continue;
+    if (best == null || t.celsius > best.celsius) best = t;
+  }
+  return best;
 }
