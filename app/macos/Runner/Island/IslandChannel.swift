@@ -10,6 +10,7 @@ final class IslandChannel {
   private let channel: FlutterMethodChannel
   private let island = IslandWindowController()
   private weak var window: NSWindow?
+  private var observers: [NSObjectProtocol] = []
 
   init(messenger: FlutterBinaryMessenger, window: NSWindow) {
     channel = FlutterMethodChannel(name: IslandChannel.name, binaryMessenger: messenger)
@@ -17,6 +18,36 @@ final class IslandChannel {
     channel.setMethodCallHandler { [weak self] call, result in
       self?.handle(call, result: result)
     }
+    island.onOpen = { [weak self] in self?.restoreWindow() }
+    observeWindow(window)
+  }
+
+  deinit {
+    observers.forEach(NotificationCenter.default.removeObserver)
+  }
+
+  private func observeWindow(_ window: NSWindow) {
+    let center = NotificationCenter.default
+    observers.append(center.addObserver(forName: NSWindow.didMiniaturizeNotification,
+                                        object: window, queue: .main) { [weak self] _ in
+      self?.send("windowMinimized")
+    })
+    observers.append(center.addObserver(forName: NSWindow.didDeminiaturizeNotification,
+                                        object: window, queue: .main) { [weak self] _ in
+      self?.send("windowRestored")
+    })
+  }
+
+  /// Brings the main window back from the Dock and focuses the app.
+  func restoreWindow() {
+    island.hide()
+    send("islandTapped")
+    NSApp.unhide(nil)
+    if let window = window {
+      if window.isMiniaturized { window.deminiaturize(nil) }
+      window.makeKeyAndOrderFront(nil)
+    }
+    NSApp.activate(ignoringOtherApps: true)
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
