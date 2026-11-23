@@ -188,7 +188,7 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
-    final settings = SettingsController(MemorySettingsRepository(AppSettings(onboardingCompleted: true)));
+    final settings = SettingsController(MemorySettingsRepository(const AppSettings(onboardingCompleted: true)));
     await settings.load();
     final controller = InventoryController(FakeRepository());
     await tester.pumpWidget(MachineInfoApp(
