@@ -246,6 +246,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         settings: widget.settings,
         inventory: controller,
         nativeVersion: widget.nativeVersion,
+        island: widget.island,
       ),
     ];
   }
