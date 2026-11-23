@@ -16,6 +16,13 @@ struct IslandRootView: View {
   @ObservedObject var state: IslandState
   let actions: IslandActions
 
+  /// Honour "Reduce motion": a short fade instead of the bouncy spring.
+  private var morph: Animation {
+    NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+      ? .easeInOut(duration: 0.18)
+      : .spring(response: 0.42, dampingFraction: 0.78)
+  }
+
   private var size: CGSize {
     state.isExpanded ? NotchGeometry.expandedSize : state.geometry.compactSize
   }
@@ -50,7 +57,7 @@ struct IslandRootView: View {
       Button("Salir de Machine Info", action: actions.quit)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .animation(.spring(response: 0.42, dampingFraction: 0.78), value: state.isExpanded)
+    .animation(morph, value: state.isExpanded)
     .animation(.easeInOut(duration: 0.25), value: state.geometry)
     .opacity(state.isVisible ? 1 : 0)
     .animation(.easeOut(duration: 0.2), value: state.isVisible)
