@@ -37,7 +37,8 @@ struct IslandRootView: View {
       // A thin glowing edge warns about a critical reading even while the
       // island is collapsed.
       NotchShape(topRadius: state.isExpanded ? 14 : 6,
-                 bottomRadius: state.isExpanded ? 30 : state.geometry.height / 2.4)
+                 bottomRadius: state.isExpanded ? 30 : state.geometry.height / 2.4,
+                 closed: false)
         .stroke(IslandPalette.accent(.critical).opacity(0.85), lineWidth: 1.2)
         .shadow(color: IslandPalette.accent(.critical).opacity(0.7), radius: 6)
         .opacity(state.payload.level == .critical ? 1 : 0)

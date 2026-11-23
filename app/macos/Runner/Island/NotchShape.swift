@@ -6,6 +6,9 @@ import SwiftUI
 struct NotchShape: Shape {
   var topRadius: CGFloat
   var bottomRadius: CGFloat
+  /// When false the top edge is left open, so a stroke only outlines the
+  /// sides and bottom and never draws a line along the screen edge.
+  var closed = true
 
   var animatableData: AnimatablePair<CGFloat, CGFloat> {
     get { AnimatablePair(topRadius, bottomRadius) }
@@ -34,7 +37,7 @@ struct NotchShape: Shape {
     p.addLine(to: CGPoint(x: rect.minX + w - tr, y: rect.minY + tr))
     p.addQuadCurve(to: CGPoint(x: rect.minX + w, y: rect.minY),
                    control: CGPoint(x: rect.minX + w - tr, y: rect.minY))
-    p.closeSubpath()
+    if closed { p.closeSubpath() }
     return p
   }
 }
