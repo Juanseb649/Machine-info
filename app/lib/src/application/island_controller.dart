@@ -2,18 +2,36 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../domain/island.dart';
 import '../domain/island_host.dart';
+import '../domain/machine_info_repository.dart';
+import 'island_payload.dart';
 import 'settings_controller.dart';
 
 /// Decides when the Dynamic Island is on screen: only while the main window
 /// is minimized, the feature is enabled and the platform can draw it.
 class IslandController extends ChangeNotifier {
-  IslandController({required IslandHost host, required SettingsController settings})
-      : _host = host,
-        _settings = settings;
+  IslandController({
+    required IslandHost host,
+    required SettingsController settings,
+    required MachineInfoRepository repository,
+    IslandPayloadBuilder builder = const IslandPayloadBuilder(),
+  })  : _host = host,
+        _settings = settings,
+        _repository = repository,
+        _builder = builder;
 
   final IslandHost _host;
   final SettingsController _settings;
+  final MachineInfoRepository _repository;
+  final IslandPayloadBuilder _builder;
+
+  Timer? _timer;
+  bool _sampling = false;
+  IslandMetrics? _latest;
+
+  /// Last readings sent to the island, also used by the in-app preview.
+  IslandMetrics? get latest => _latest;
 
   StreamSubscription<IslandEvent>? _events;
 
@@ -60,17 +78,63 @@ class IslandController extends ChangeNotifier {
     if (show == _visible) return;
     _visible = show;
     notifyListeners();
+    if (show) {
+      _push();
+      await _call(_host.show);
+      _startSampling();
+      unawaited(sample());
+    } else {
+      _stopSampling();
+      await _call(_host.hide);
+    }
+  }
+
+  Duration get _interval => Duration(seconds: _settings.settings.islandRefreshSeconds);
+
+  void _startSampling() {
+    _timer?.cancel();
+    _timer = Timer.periodic(_interval, (_) => sample());
+  }
+
+  void _stopSampling() {
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  /// Reads the hardware once and sends it to the island. Overlapping calls
+  /// are skipped so a slow sensor read never piles up work.
+  Future<void> sample() async {
+    if (_sampling) return;
+    _sampling = true;
     try {
-      if (show) {
-        await _host.show();
-      } else {
-        await _host.hide();
-      }
+      final snapshot = await _repository.loadHardware();
+      _latest = IslandMetrics.fromSnapshot(snapshot);
+      notifyListeners();
+      if (_visible) _push();
+    } catch (_) {
+      // Keep showing the previous readings; the next tick tries again.
+    } finally {
+      _sampling = false;
+    }
+  }
+
+  void _push() {
+    final metrics = _latest;
+    if (metrics == null) return;
+    final s = _settings.settings;
+    unawaited(_call(() => _host.update(
+        _builder.build(metrics, unit: s.temperatureUnit, preferred: s.islandPrimaryMetric))));
+  }
+
+  Future<void> _call(Future<void> Function() action) async {
+    try {
+      await action();
     } catch (_) {}
   }
 
   @override
   void dispose() {
+    _stopSampling();
     _events?.cancel();
     _settings.removeListener(_onSettingsChanged);
     super.dispose();
