@@ -36,6 +36,7 @@
 		349E3887F73AA65EAFD6935D /* IslandExpandedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A69436E349E3887F73AA65E /* IslandExpandedView.swift */; };
 		C9112F1F583092CFC2D0720D /* IslandRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CED2D6BC9112F1F583092CF /* IslandRootView.swift */; };
 		E3347CA74DF7D6B4EE0835FD /* IslandPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5836048E3347CA74DF7D6B4 /* IslandPanel.swift */; };
+		63A40470CB75B0AFA4C8B574 /* IslandWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D8A95263A40470CB75B0AF /* IslandWindowController.swift */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		D83DEA775B268D748FD86ACC /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E101AB21FBC936BC058DCDB /* Pods_RunnerTests.framework */; };
@@ -94,6 +95,7 @@
 		3A69436E349E3887F73AA65E /* IslandExpandedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandExpandedView.swift; sourceTree = "<group>"; };
 		2CED2D6BC9112F1F583092CF /* IslandRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandRootView.swift; sourceTree = "<group>"; };
 		B5836048E3347CA74DF7D6B4 /* IslandPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandPanel.swift; sourceTree = "<group>"; };
+		19D8A95263A40470CB75B0AF /* IslandWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandWindowController.swift; sourceTree = "<group>"; };
 		33CC11122044BFA00003C045 /* MainFlutterWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlutterWindow.swift; sourceTree = "<group>"; };
 		33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Debug.xcconfig"; sourceTree = "<group>"; };
 		33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Release.xcconfig"; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 			children = (
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
+				19D8A95263A40470CB75B0AF /* IslandWindowController.swift */,
 				B5836048E3347CA74DF7D6B4 /* IslandPanel.swift */,
 				2CED2D6BC9112F1F583092CF /* IslandRootView.swift */,
 				3A69436E349E3887F73AA65E /* IslandExpandedView.swift */,
@@ -478,6 +481,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
+				63A40470CB75B0AFA4C8B574 /* IslandWindowController.swift in Sources */,
 				E3347CA74DF7D6B4EE0835FD /* IslandPanel.swift in Sources */,
 				C9112F1F583092CFC2D0720D /* IslandRootView.swift in Sources */,
 				349E3887F73AA65EAFD6935D /* IslandExpandedView.swift in Sources */,
