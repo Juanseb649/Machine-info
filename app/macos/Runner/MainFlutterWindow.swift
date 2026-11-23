@@ -2,6 +2,9 @@ import Cocoa
 import FlutterMacOS
 
 class MainFlutterWindow: NSWindow {
+  /// Kept alive for the lifetime of the window.
+  private var islandChannel: IslandChannel?
+
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
     let windowFrame = self.frame
@@ -9,6 +12,7 @@ class MainFlutterWindow: NSWindow {
     self.setFrame(windowFrame, display: true)
 
     RegisterGeneratedPlugins(registry: flutterViewController)
+    islandChannel = IslandChannel(messenger: flutterViewController.engine.binaryMessenger, window: self)
 
     super.awakeFromNib()
   }
