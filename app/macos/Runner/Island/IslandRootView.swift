@@ -34,6 +34,15 @@ struct IslandRootView: View {
         .fill(IslandPalette.body)
         .shadow(color: .black.opacity(state.isExpanded ? 0.45 : 0), radius: 18, y: 8)
 
+      // A thin glowing edge warns about a critical reading even while the
+      // island is collapsed.
+      NotchShape(topRadius: state.isExpanded ? 14 : 6,
+                 bottomRadius: state.isExpanded ? 30 : state.geometry.height / 2.4)
+        .stroke(IslandPalette.accent(.critical).opacity(0.85), lineWidth: 1.2)
+        .shadow(color: IslandPalette.accent(.critical).opacity(0.7), radius: 6)
+        .opacity(state.payload.level == .critical ? 1 : 0)
+        .animation(.easeInOut(duration: 0.4), value: state.payload.level)
+
       Group {
         if state.isExpanded {
           IslandExpandedView(payload: state.payload, geometry: state.geometry, onOpen: actions.open)
