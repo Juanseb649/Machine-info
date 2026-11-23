@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 
 import '../../application/inventory_controller.dart';
+import '../../application/island_controller.dart';
 import '../../application/settings_controller.dart';
 import '../../domain/entities.dart';
+import '../../domain/island.dart';
 import '../theme/glass_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/glass.dart';
+import '../widgets/island_preview.dart';
 
 class SettingsTab extends StatelessWidget {
-  const SettingsTab({super.key, required this.settings, required this.inventory, this.nativeVersion = ''});
+  const SettingsTab({
+    super.key,
+    required this.settings,
+    required this.inventory,
+    this.nativeVersion = '',
+    this.island,
+  });
 
   final SettingsController settings;
   final InventoryController inventory;
   final String nativeVersion;
+  final IslandController? island;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +130,7 @@ class SettingsTab extends StatelessWidget {
           ),
         ],
       ),
+      _IslandCard(settings: settings, inventory: inventory, island: island),
       InfoCard(
         title: 'Tutorial',
         icon: Icons.school_outlined,
@@ -149,6 +160,84 @@ class SettingsTab extends StatelessWidget {
         ],
       ),
     ]);
+  }
+}
+
+class _IslandCard extends StatelessWidget {
+  const _IslandCard({required this.settings, required this.inventory, required this.island});
+
+  final SettingsController settings;
+  final InventoryController inventory;
+  final IslandController? island;
+
+  @override
+  Widget build(BuildContext context) {
+    final listenable = island == null ? settings : Listenable.merge([settings, island!]);
+    return ListenableBuilder(
+      listenable: listenable,
+      builder: (context, _) {
+        final s = settings.settings;
+        final supported = island?.supported ?? false;
+        final snapshot = inventory.hardware.value;
+        final metrics = island?.latest ?? (snapshot == null ? null : IslandMetrics.fromSnapshot(snapshot));
+        return InfoCard(
+          title: 'Isla dinámica',
+          icon: Icons.view_agenda_outlined,
+          trailing: GlassPill(
+            label: supported ? 'macOS' : 'Solo en macOS',
+            icon: supported ? Icons.check_circle_outline : Icons.info_outline,
+          ),
+          children: [
+            Center(
+              child: IslandPreview(
+                metrics: metrics,
+                unit: s.temperatureUnit,
+                preferred: s.islandPrimaryMetric,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _SettingRow(
+              title: 'Mostrar al minimizar',
+              subtitle: supported
+                  ? 'Al minimizar u ocultar la ventana aparece una isla junto a la cámara con '
+                      'CPU, RAM, temperatura y disco en vivo. Pasa el ratón para ver más.'
+                  : 'La isla flotante junto al notch solo está disponible en macOS. '
+                      'En este sistema puedes ver la vista previa de arriba.',
+              trailing: Switch(
+                value: supported && s.islandEnabled,
+                onChanged: supported ? settings.setIslandEnabled : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const _Label('Lectura junto a la cámara'),
+            GlassSegmented<IslandPrimaryMetric>(
+              value: s.islandPrimaryMetric,
+              onChanged: settings.setIslandPrimaryMetric,
+              segments: const [
+                GlassSegment(IslandPrimaryMetric.cpu, 'CPU', icon: Icons.memory),
+                GlassSegment(IslandPrimaryMetric.memory, 'RAM', icon: Icons.developer_board),
+                GlassSegment(IslandPrimaryMetric.temperature, 'Temp.', icon: Icons.thermostat),
+                GlassSegment(IslandPrimaryMetric.disk, 'Disco', icon: Icons.storage),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const _Label('Actualizar cada'),
+            SizedBox(
+              width: 320,
+              child: GlassSegmented<int>(
+                value: s.islandRefreshSeconds,
+                onChanged: settings.setIslandRefreshSeconds,
+                segments: const [
+                  GlassSegment(1, '1 s'),
+                  GlassSegment(2, '2 s'),
+                  GlassSegment(5, '5 s'),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
