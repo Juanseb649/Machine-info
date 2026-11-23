@@ -48,4 +48,21 @@ void main() {
     expect(repo.value.onboardingCompleted, isTrue);
     controller.dispose();
   });
+
+  test('island settings default to on with CPU and persist changes', () async {
+    final repo = _Repo(const AppSettings());
+    final controller = SettingsController(repo);
+    await controller.load();
+    expect(controller.settings.islandEnabled, isTrue);
+    expect(controller.settings.islandPrimaryMetric, IslandPrimaryMetric.cpu);
+
+    await controller.setIslandEnabled(false);
+    await controller.setIslandPrimaryMetric(IslandPrimaryMetric.temperature);
+    await controller.setIslandRefreshSeconds(60);
+
+    expect(repo.value.islandEnabled, isFalse);
+    expect(repo.value.islandPrimaryMetric, IslandPrimaryMetric.temperature);
+    expect(repo.value.islandRefreshSeconds, 10);
+    controller.dispose();
+  });
 }
