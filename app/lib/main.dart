@@ -22,6 +22,7 @@ Future<void> main() async {
   final island = IslandController(host: createIslandHost(), settings: settings, repository: repository);
   controller.addListener(() => island.seed(controller.hardware.value));
   await island.start();
+  _pauseLiveRefreshWhileIslandIsUp(island, controller);
   String nativeVersion;
   try {
     nativeVersion = MachineInfoNative.instance.version;
@@ -35,6 +36,22 @@ Future<void> main() async {
     nativeVersion: nativeVersion,
     island: island,
   ));
+}
+
+/// While the island is on screen it samples the hardware itself, so the
+/// main window's live refresh is paused and resumed when the window returns.
+void _pauseLiveRefreshWhileIslandIsUp(IslandController island, InventoryController inventory) {
+  var resume = false;
+  island.addListener(() {
+    if (island.visible && inventory.autoRefresh) {
+      resume = true;
+      inventory.setAutoRefresh(false);
+    } else if (!island.visible && resume) {
+      resume = false;
+      inventory.setAutoRefresh(true);
+      inventory.refreshHardware();
+    }
+  });
 }
 
 final _lightTheme = buildGlassTheme(Brightness.light);
