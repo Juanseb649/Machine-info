@@ -90,6 +90,7 @@ private struct ReadingTile: View {
         .font(.system(size: 9))
         .foregroundColor(IslandPalette.secondaryText)
         .lineLimit(1)
+        .minimumScaleFactor(0.8)
         .truncationMode(.middle)
     }
     .frame(maxWidth: .infinity)
