@@ -32,6 +32,7 @@
 		C3106846520F1DCE309F3BCC /* NotchShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6E00BBC3106846520F1DCE /* NotchShape.swift */; };
 		401A97EFDAE71EBA62C96011 /* IslandPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7759284E401A97EFDAE71EBA /* IslandPalette.swift */; };
 		907F24289A1A887D12923D9D /* MeterRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AA015A4907F24289A1A887D /* MeterRing.swift */; };
+		BC39B808BB36ADE4ED025682 /* IslandCompactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52B3055BC39B808BB36ADE4 /* IslandCompactView.swift */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		D83DEA775B268D748FD86ACC /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E101AB21FBC936BC058DCDB /* Pods_RunnerTests.framework */; };
@@ -86,6 +87,7 @@
 		AD6E00BBC3106846520F1DCE /* NotchShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/NotchShape.swift; sourceTree = "<group>"; };
 		7759284E401A97EFDAE71EBA /* IslandPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandPalette.swift; sourceTree = "<group>"; };
 		8AA015A4907F24289A1A887D /* MeterRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/MeterRing.swift; sourceTree = "<group>"; };
+		A52B3055BC39B808BB36ADE4 /* IslandCompactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island/IslandCompactView.swift; sourceTree = "<group>"; };
 		33CC11122044BFA00003C045 /* MainFlutterWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlutterWindow.swift; sourceTree = "<group>"; };
 		33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Debug.xcconfig"; sourceTree = "<group>"; };
 		33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Release.xcconfig"; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 			children = (
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
+				A52B3055BC39B808BB36ADE4 /* IslandCompactView.swift */,
 				8AA015A4907F24289A1A887D /* MeterRing.swift */,
 				7759284E401A97EFDAE71EBA /* IslandPalette.swift */,
 				AD6E00BBC3106846520F1DCE /* NotchShape.swift */,
@@ -466,6 +469,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
+				BC39B808BB36ADE4ED025682 /* IslandCompactView.swift in Sources */,
 				907F24289A1A887D12923D9D /* MeterRing.swift in Sources */,
 				401A97EFDAE71EBA62C96011 /* IslandPalette.swift in Sources */,
 				C3106846520F1DCE309F3BCC /* NotchShape.swift in Sources */,
