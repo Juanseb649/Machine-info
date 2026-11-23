@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../domain/entities.dart';
 import '../domain/island.dart';
 import '../domain/island_host.dart';
 import '../domain/machine_info_repository.dart';
@@ -109,6 +110,13 @@ class IslandController extends ChangeNotifier {
     _timer?.cancel();
     _timer = null;
     _activeInterval = null;
+  }
+
+  /// Uses a snapshot the app already has, so the island opens with numbers
+  /// instead of waiting for the first sample.
+  void seed(HardwareSnapshot? snapshot) {
+    if (snapshot == null || _latest != null) return;
+    _latest = IslandMetrics.fromSnapshot(snapshot);
   }
 
   /// Reads the hardware once and sends it to the island. Overlapping calls
