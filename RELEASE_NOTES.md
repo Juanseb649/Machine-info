@@ -1,3 +1,17 @@
+# Machine Info 0.4.0
+
+## Novedades
+- **Isla dinámica en macOS**: al minimizar la ventana aparece una isla junto al notch con CPU, RAM,
+  temperatura y disco en vivo. Pasa el ratón para ver el detalle y vuelve a la app con doble clic.
+- Nueva tarjeta **Isla dinámica** en Ajustes con vista previa, la lectura junto a la cámara y el
+  intervalo de refresco (1, 2 o 5 s).
+- Alertas por color (verde, ámbar, rojo) y borde rojo cuando una lectura es crítica.
+- En Windows y Linux la isla no está disponible todavía; Ajustes lo explica y muestra la vista previa.
+
+---
+
+# Machine Info 0.3.0
+
 Primera versión pública de **Machine Info**: hardware y software de tu equipo, de un vistazo.
 
 ## Novedades
