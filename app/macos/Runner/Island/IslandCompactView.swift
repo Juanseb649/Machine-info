@@ -35,6 +35,8 @@ struct IslandCompactView: View {
       .frame(width: NotchGeometry.wingWidth - 14,
              alignment: alignment == .leading ? .leading : .trailing)
       .help("\(reading.label): \(reading.value)")
+      .accessibilityElement(children: .ignore)
+      .accessibilityLabel("\(reading.label) \(reading.value)")
     } else {
       ProgressView()
         .scaleEffect(0.45)

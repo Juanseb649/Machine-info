@@ -97,6 +97,8 @@ private struct ReadingTile: View {
     .padding(.vertical, 8)
     .background(RoundedRectangle(cornerRadius: 14).fill(Color.white.opacity(0.06)))
     .overlay(RoundedRectangle(cornerRadius: 14).stroke(IslandPalette.hairline))
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel("\(reading.label) \(reading.value), \(reading.detail)")
   }
 }
 
