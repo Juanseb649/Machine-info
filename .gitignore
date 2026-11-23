@@ -12,3 +12,4 @@ app/windows/flutter/ephemeral/
 app/linux/flutter/ephemeral/
 app/macos/Flutter/ephemeral/
 app/macos/Pods/
+.DS_Store
