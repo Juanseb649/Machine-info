@@ -15,6 +15,9 @@ final class IslandPanel: NSPanel {
     isOpaque = false
     hasShadow = false
     hidesOnDeactivate = false
+    // Stay on screen when the app is hidden with Cmd+H; that is exactly when
+    // the island is meant to stand in for the main window.
+    canHide = false
     isMovable = false
     isReleasedWhenClosed = false
     animationBehavior = .none
