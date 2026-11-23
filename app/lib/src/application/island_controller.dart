@@ -113,9 +113,10 @@ class IslandController extends ChangeNotifier {
   }
 
   /// Uses a snapshot the app already has, so the island opens with numbers
-  /// instead of waiting for the first sample.
+  /// instead of waiting for the first sample. Ignored while the island is
+  /// visible, because it then samples on its own.
   void seed(HardwareSnapshot? snapshot) {
-    if (snapshot == null || _latest != null) return;
+    if (snapshot == null || _visible) return;
     _latest = IslandMetrics.fromSnapshot(snapshot);
   }
 
