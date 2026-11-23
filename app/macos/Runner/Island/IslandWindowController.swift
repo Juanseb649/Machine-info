@@ -18,6 +18,13 @@ final class IslandWindowController {
   }()
 
   private var screen: NSScreen?
+  private var pendingHover: DispatchWorkItem?
+  private var pendingShrink: DispatchWorkItem?
+
+  /// Delay before opening on hover, so passing the pointer to the menu bar
+  /// does not pop the island open.
+  private let openDelay: TimeInterval = 0.12
+  private let closeDelay: TimeInterval = 0.3
 
   var isShown: Bool { state.isVisible }
 
@@ -51,11 +58,39 @@ final class IslandWindowController {
     panel.setFrame(NSRect(origin: origin, size: size), display: true)
   }
 
+  func setExpanded(_ expanded: Bool) {
+    guard state.isVisible, expanded != state.isExpanded else { return }
+    pendingShrink?.cancel()
+    if expanded {
+      // Grow the window first so the spring has room to play.
+      place(size: NotchGeometry.expandedSize)
+      state.isExpanded = true
+    } else {
+      state.isExpanded = false
+      let shrink = DispatchWorkItem { [weak self] in
+        guard let self = self, !self.state.isExpanded else { return }
+        self.place(size: self.state.geometry.compactSize)
+      }
+      pendingShrink = shrink
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.45, execute: shrink)
+    }
+  }
+
+  private func hoverChanged(_ inside: Bool) {
+    pendingHover?.cancel()
+    let work = DispatchWorkItem { [weak self] in self?.setExpanded(inside) }
+    pendingHover = work
+    DispatchQueue.main.asyncAfter(deadline: .now() + (inside ? openDelay : closeDelay), execute: work)
+  }
+
   private func makeActions() -> IslandActions {
     IslandActions(
-      hoverChanged: { _ in },
+      hoverChanged: { [weak self] inside in self?.hoverChanged(inside) },
       open: { [weak self] in self?.onOpen() },
-      toggle: {}
+      toggle: { [weak self] in
+        guard let self = self else { return }
+        self.setExpanded(!self.state.isExpanded)
+      }
     )
   }
 }
