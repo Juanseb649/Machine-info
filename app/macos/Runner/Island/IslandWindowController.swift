@@ -31,13 +31,49 @@ final class IslandWindowController {
 
   var isShown: Bool { state.isVisible }
 
+  private var workspaceObservers: [NSObjectProtocol] = []
+  /// True while another app is in full screen on the island's display.
+  private var suppressed = false
+
+  init() {
+    let center = NSWorkspace.shared.notificationCenter
+    for name in [NSWorkspace.activeSpaceDidChangeNotification,
+                 NSWorkspace.didActivateApplicationNotification] {
+      workspaceObservers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+        // Spaces finish switching a moment after the notification.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { self?.refreshFullScreen() }
+      })
+    }
+  }
+
+  deinit {
+    workspaceObservers.forEach(NSWorkspace.shared.notificationCenter.removeObserver)
+  }
+
+  /// Gets out of the way of full-screen videos, games and presentations,
+  /// and comes back when they end.
+  func refreshFullScreen() {
+    guard state.isVisible else { return }
+    let covered = FullScreenDetector.isFullScreenAppActive(on: screen)
+    guard covered != suppressed else { return }
+    suppressed = covered
+    if covered {
+      setExpanded(false)
+      panel.orderOut(nil)
+    } else {
+      panel.orderFrontRegardless()
+    }
+  }
+
   func show() {
     screen = NotchGeometry.preferredScreen()
     if let screen = screen { state.geometry = NotchGeometry(screen: screen) }
     state.isExpanded = false
     place(size: state.geometry.compactSize)
-    panel.orderFrontRegardless()
     state.isVisible = true
+    suppressed = false
+    refreshFullScreen()
+    if !suppressed { panel.orderFrontRegardless() }
   }
 
   func hide() {
