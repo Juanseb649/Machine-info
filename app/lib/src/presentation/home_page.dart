@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../application/inventory_controller.dart';
+import '../application/island_controller.dart';
 import '../application/settings_controller.dart';
 import '../application/software_controller.dart';
 import 'onboarding/onboarding_overlay.dart';
@@ -21,12 +22,14 @@ class HomePage extends StatefulWidget {
     required this.settings,
     required this.software,
     this.nativeVersion = '',
+    this.island,
   });
 
   final InventoryController controller;
   final SettingsController settings;
   final SoftwareController software;
   final String nativeVersion;
+  final IslandController? island;
 
   @override
   State<HomePage> createState() => _HomePageState();
