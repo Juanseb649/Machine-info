@@ -37,6 +37,17 @@ final class IslandChannel {
                                         object: window, queue: .main) { [weak self] _ in
       self?.send("windowMinimized")
     })
+    // Hiding the app (Cmd+H) also takes the window off screen, so the island
+    // stands in for it just like when it is minimized.
+    observers.append(center.addObserver(forName: NSApplication.didHideNotification,
+                                        object: nil, queue: .main) { [weak self] _ in
+      self?.send("windowMinimized")
+    })
+    observers.append(center.addObserver(forName: NSApplication.didUnhideNotification,
+                                        object: nil, queue: .main) { [weak self] _ in
+      guard let window = self?.window, !window.isMiniaturized else { return }
+      self?.send("windowRestored")
+    })
     observers.append(center.addObserver(forName: NSWindow.didDeminiaturizeNotification,
                                         object: window, queue: .main) { [weak self] _ in
       self?.send("windowRestored")
